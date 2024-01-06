@@ -127,19 +127,17 @@ void WriteObj(NavMeshFile meshFile, char* fileBuffer)
     startingPoint.points[1] = 0;
     startingPoint.points[2] = meshFile.pInternalData->zBegin * 16;
 
-    int vertexThing = 0;
+    int vertexIndex = 0;
 
     outputFile.open("C:/Users/Mongo/source/repos/MeshToObj/MeshToObj/Output/output.obj", std::ios::out);
 
 
 
-    for (int i = 0; i < meshFile.pAutoGenDatFile->layerMeshCount; i++) //meshFile.pAutoGenDatFile->layerMeshCount
+    for (int i = 0; i < meshFile.pAutoGenDatFile->layerMeshCount; i++)
     {
         
         pNavMesh = (NavMesh*)(fileBuffer + meshFile.pOffsetMap[i]);
         printf("Mesh %u: Identifiers = %.4s, %.4s\n", i, pNavMesh->magic, pNavMesh->meshHeader.magic);
-
-        //outputFile << "g NavMesh_" << i << "\n";
         outputFile << "o BoundingBox_" << pNavMesh->meshHeader.xIndex << "_" << pNavMesh->meshHeader.zIndex << "\n";
 
         pVertices = (Vertex*) &pNavMesh[1];
@@ -173,42 +171,26 @@ void WriteObj(NavMeshFile meshFile, char* fileBuffer)
         // Edges are written to the .obj as l pointA pointB
         // .obj Vertices start at index 1
         // Edges connecting the lower four Vertices
-
-        outputFile << "l " << vertexThing + 1 << " " << vertexThing + 2 << "\n";
-        outputFile << "l " << vertexThing + 2 << " " << vertexThing + 3 << "\n";
-        outputFile << "l " << vertexThing + 3 << " " << vertexThing + 4 << "\n";
-        outputFile << "l " << vertexThing + 4 << " " << vertexThing + 1 << "\n";
-
-        /*outputFile << "l 1 2\n";
-        outputFile << "l 2 3\n";
-        outputFile << "l 3 4\n";
-        outputFile << "l 4 1\n";*/
+        outputFile << "l " << vertexIndex + 1 << " " << vertexIndex + 2 << "\n";
+        outputFile << "l " << vertexIndex + 2 << " " << vertexIndex + 3 << "\n";
+        outputFile << "l " << vertexIndex + 3 << " " << vertexIndex + 4 << "\n";
+        outputFile << "l " << vertexIndex + 4 << " " << vertexIndex + 1 << "\n";
 
         // Edges connecting the upper four Vertices
+        outputFile << "l " << vertexIndex + 5 << " " << vertexIndex + 6 << "\n";
+        outputFile << "l " << vertexIndex + 6 << " " << vertexIndex + 7 << "\n";
+        outputFile << "l " << vertexIndex + 7 << " " << vertexIndex + 8 << "\n";
+        outputFile << "l " << vertexIndex + 8 << " " << vertexIndex + 5 << "\n";
 
-        outputFile << "l " << vertexThing + 5 << " " << vertexThing + 6 << "\n";
-        outputFile << "l " << vertexThing + 6 << " " << vertexThing + 7 << "\n";
-        outputFile << "l " << vertexThing + 7 << " " << vertexThing + 8 << "\n";
-        outputFile << "l " << vertexThing + 8 << " " << vertexThing + 5 << "\n";
-
-        /*outputFile << "l 5 6\n";
-        outputFile << "l 6 7\n";
-        outputFile << "l 7 8\n";
-        outputFile << "l 8 5\n";*/
 
         // Vertical Edges connecting the lower four with the upper four
+        outputFile << "l " << vertexIndex + 1 << " " << vertexIndex + 5 << "\n";
+        outputFile << "l " << vertexIndex + 2 << " " << vertexIndex + 6 << "\n";
+        outputFile << "l " << vertexIndex + 3 << " " << vertexIndex + 7 << "\n";
+        outputFile << "l " << vertexIndex + 4 << " " << vertexIndex + 8 << "\n";
 
-        outputFile << "l " << vertexThing + 1 << " " << vertexThing + 5 << "\n";
-        outputFile << "l " << vertexThing + 2 << " " << vertexThing + 6 << "\n";
-        outputFile << "l " << vertexThing + 3 << " " << vertexThing + 7 << "\n";
-        outputFile << "l " << vertexThing + 4 << " " << vertexThing + 8 << "\n";
 
-        /*outputFile << "l 1 5\n";
-        outputFile << "l 2 6\n";
-        outputFile << "l 3 7\n";
-        outputFile << "l 4 8\n";*/
-
-        vertexThing += 8;
+        vertexIndex += 8;
 
         //// The actual Navigation Mesh
         //outputFile << "o Mesh_" << i << "\n";
@@ -234,7 +216,7 @@ void WriteObj(NavMeshFile meshFile, char* fileBuffer)
                     // Because .obj Vertex Indices start from 1, we add 1 to the Polygon's Vertex index value
                     // We also add 8 to the value to account for the 8 Vertices we used to create the Bounding Box
                     // 1 + 8 = 9
-                    outputFile << "l " << pPolys[i].verts[j] + vertexThing + 1 << " " << pPolys[i].verts[0] + vertexThing + 1 << "\n";
+                    outputFile << "l " << pPolys[i].verts[j] + vertexIndex + 1 << " " << pPolys[i].verts[0] + vertexIndex + 1 << "\n";
                 }
                 else
                 {
@@ -242,7 +224,7 @@ void WriteObj(NavMeshFile meshFile, char* fileBuffer)
                     // Because .obj Vertex Indices start from 1, we add 1 to the Polygon's Vertex index value
                     // We also add 8 to the value to account for the 8 Vertices we used to create the Bounding Box
                     // 1 + 8 = 9
-                    outputFile << "l " << pPolys[i].verts[j] + vertexThing + 1 << " " << pPolys[i].verts[j + 1] + vertexThing + 1 << "\n";
+                    outputFile << "l " << pPolys[i].verts[j] + vertexIndex + 1 << " " << pPolys[i].verts[j + 1] + vertexIndex + 1 << "\n";
                 }
             }
         }
@@ -256,12 +238,12 @@ void WriteObj(NavMeshFile meshFile, char* fileBuffer)
                 // Because .obj Vertex Indices start from 1, we add 1 to the Polygon's Vertex index value
                 // We also add 8 to the value to account for the 8 Vertices we used to create the Bounding Box
                 // 1 + 8 = 9
-                outputFile << " " << pPolys[i].verts[j] + vertexThing + 1;
+                outputFile << " " << pPolys[i].verts[j] + vertexIndex + 1;
             }
             outputFile << "\n";
         }
 
-        vertexThing += pNavMesh->meshHeader.vertCount;
+        vertexIndex += pNavMesh->meshHeader.vertCount;
 
     }
 
