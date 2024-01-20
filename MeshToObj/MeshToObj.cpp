@@ -129,7 +129,8 @@ void WriteObj(NavMeshFile meshFile, char* fileBuffer)
 
     int vertexIndex = 0;
 
-    outputFile.open("C:/Users/Mongo/source/repos/MeshToObj/MeshToObj/Output/output.obj", std::ios::out);
+
+    outputFile.open("../../MeshToObj/Output/output.obj", std::ios::out);
 
 
 
